@@ -1,0 +1,1 @@
+pub usingnamespace @import("user_persistent.zig");
