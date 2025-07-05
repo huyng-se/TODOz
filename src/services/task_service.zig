@@ -9,34 +9,24 @@ pub const TaskService = struct {
     repo: ports.TaskInMemPort,
     next_id: u32,
 
-    pub fn taskServicePort(self: *TaskService) ports.TaskServicePort {
-        return .{
-            .ptr = self,
-            .createTaskFn = TaskService.createTask,
-            .findTaskFn = TaskService.findTask,
-            .listTasksFn = TaskService.listTasks,
-            .deleteTaskFn = TaskService.deleteTask,
-        };
-    }
-
-    pub fn createTask(ptr: *anyopaque, payload: Task) anyerror!void {
+    pub fn createTask(ptr: *anyopaque, title: []const u8) anyerror!void {
         var self: *TaskService = @ptrCast(@alignCast(ptr));
+        // TODO: fix error here
         const new_task = try Task.new(
             self.allocator,
-            payload.id,
-            payload.title,
-            payload.description,
-            payload.status,
+            self.next_id,
+            title,
+            false,
+            "2023-10-01T00:00:00Z", // Placeholder for created_at
         );
 
         self.next_id += 1;
-        try self.repo.save(self.allocator, new_task);
-        return;
+        try self.repo.save(new_task);
     }
 
     pub fn findTask(ptr: *anyopaque, id: u32) anyerror!?Task {
         var self: *TaskService = @ptrCast(@alignCast(ptr));
-        const task = try self.repo.findById(self.allocator, id);
+        const task = try self.repo.findById(id);
 
         if (task) |t| {
             return t;
@@ -47,17 +37,21 @@ pub const TaskService = struct {
 
     pub fn listTasks(ptr: *anyopaque) anyerror![]Task {
         var self: *TaskService = @ptrCast(@alignCast(ptr));
-        return self.repo.findAll(self.allocator);
+        return self.repo.findAll();
     }
 
     pub fn deleteTask(ptr: *anyopaque, id: u32) anyerror!void {
         var self: *TaskService = @ptrCast(@alignCast(ptr));
-        const task = try self.repo.findById(self.allocator, id);
+        try self.repo.deleteById(id);
+    }
 
-        if (task) |t| {
-            try self.repo.delete(self.allocator, t);
-        } else {
-            return error.TaskNotFound;
-        }
+    pub fn taskServicePort(self: *TaskService) ports.TaskServicePort {
+        return .{
+            .ptr = self,
+            .createTaskFn = TaskService.createTask,
+            .findTaskFn = TaskService.findTask,
+            .listTasksFn = TaskService.listTasks,
+            .deleteTaskFn = TaskService.deleteTask,
+        };
     }
 };

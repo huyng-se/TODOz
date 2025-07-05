@@ -5,13 +5,13 @@ const Task = domain.TaskEntity;
 
 pub const TaskServicePort = struct {
     ptr: *anyopaque,
-    createTaskFn: *const fn (*anyopaque, Task) anyerror!void,
+    createTaskFn: *const fn (*anyopaque, []const u8) anyerror!void,
     findTaskFn: *const fn (*anyopaque, u32) anyerror!?Task,
     listTasksFn: *const fn (*anyopaque) anyerror![]Task,
     deleteTaskFn: *const fn (*anyopaque, u32) anyerror!void,
 
-    pub fn createTask(self: TaskServicePort, payload: Task) anyerror!void {
-        return self.createTaskFn(self.ptr, payload);
+    pub fn createTask(self: TaskServicePort, title: []const u8) anyerror!void {
+        return self.createTaskFn(self.ptr, title);
     }
 
     pub fn findTask(self: TaskServicePort, id: u32) anyerror!?Task {
@@ -19,7 +19,7 @@ pub const TaskServicePort = struct {
     }
 
     pub fn listTasks(self: TaskServicePort) anyerror![]Task {
-        return self.listTasksFn(self.context);
+        return self.listTasksFn(self.ptr);
     }
 
     pub fn deleteTask(self: TaskServicePort, id: u32) anyerror!void {
@@ -43,7 +43,7 @@ pub const TaskInMemPort = struct {
     }
 
     pub fn findAll(self: TaskInMemPort) anyerror![]Task {
-        return self.findAllFn(self.context);
+        return self.findAllFn(self.ptr);
     }
 
     pub fn deleteById(self: TaskInMemPort, id: u32) anyerror!void {

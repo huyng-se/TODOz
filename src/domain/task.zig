@@ -21,7 +21,8 @@ pub const TaskEntity = struct {
         };
     }
 
-    pub fn deInit(self: *TaskEntity, allocator: std.mem.Allocator) void {
+    // TODO: fix error here
+    pub fn deinit(self: *TaskEntity, allocator: std.mem.Allocator) void {
         allocator.free(self.title);
         allocator.free(self.created_at);
     }
