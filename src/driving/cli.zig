@@ -7,7 +7,7 @@ pub const CLIHandler = struct {
 
     // TODO: fix error here
     pub fn handle(_: CLIHandler) !void {
-        var input: [10]u8 = undefined;
+        var input: [20]u8 = undefined;
         const stdin = std.io.getStdIn().reader();
         const stdout = std.io.getStdOut().writer();
 
@@ -15,12 +15,7 @@ pub const CLIHandler = struct {
 
         try stdout.print("The user entered: {s}\n", .{input});
 
-        // if (args.len < 2) {
-        //     std.debug.print("Usage: <app> [list|add <title>]\n", .{});
-        //     return error.InvalidArguments;
-        // }
-
-        // if (std.mem.eql(u8, command, "list")) {
+        // if (std.mem.eql(u8, input, "list")) {
         //     const todos = try self.service.listTasks();
         //     std.debug.print("--- TODO LIST ---\n", .{});
 
@@ -31,9 +26,9 @@ pub const CLIHandler = struct {
         //     for (todos) |todo| {
         //         std.debug.print("[{d}] {s} {s} {s}", .{ todo.id, if (todo.completed) "✓" else "✗", todo.title, todo.created_at });
         //     }
-        // } else
+        // }
 
-        // if (std.mem.eql(u8, command, "add")) {
+        // else if (std.mem.eql(u8, command, "add")) {
         //     if (args.len < 3) {
         //         std.debug.print("Usage: <app> add <title>\n", .{});
         //         return error.InvalidArguments;

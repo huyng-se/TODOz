@@ -8,7 +8,7 @@ pub const TaskServicePort = struct {
     createTaskFn: *const fn (*anyopaque, []const u8) anyerror!void,
     findTaskFn: *const fn (*anyopaque, u32) anyerror!?Task,
     listTasksFn: *const fn (*anyopaque) anyerror![]Task,
-    deleteTaskFn: *const fn (*anyopaque, u32) anyerror!void,
+    deleteTaskFn: *const fn (*anyopaque, u32) anyerror!Task,
 
     pub fn createTask(self: TaskServicePort, title: []const u8) anyerror!void {
         return self.createTaskFn(self.ptr, title);
@@ -22,7 +22,7 @@ pub const TaskServicePort = struct {
         return self.listTasksFn(self.ptr);
     }
 
-    pub fn deleteTask(self: TaskServicePort, id: u32) anyerror!void {
+    pub fn deleteTask(self: TaskServicePort, id: u32) anyerror!Task {
         return self.deleteTaskFn(self.ptr, id);
     }
 };
@@ -32,7 +32,7 @@ pub const TaskInMemPort = struct {
     saveFn: *const fn (*anyopaque, Task) anyerror!void,
     findByIdFn: *const fn (*anyopaque, u32) anyerror!?Task,
     findAllFn: *const fn (*anyopaque) anyerror![]Task,
-    deleteByIdFn: *const fn (*anyopaque, u32) anyerror!void,
+    deleteByIdFn: *const fn (*anyopaque, u32) anyerror!Task,
 
     pub fn save(self: TaskInMemPort, payload: Task) anyerror!void {
         return self.saveFn(self.ptr, payload);
@@ -46,7 +46,7 @@ pub const TaskInMemPort = struct {
         return self.findAllFn(self.ptr);
     }
 
-    pub fn deleteById(self: TaskInMemPort, id: u32) anyerror!void {
+    pub fn deleteById(self: TaskInMemPort, id: u32) anyerror!Task {
         return self.deleteByIdFn(self.ptr, id);
     }
 };

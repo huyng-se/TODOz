@@ -28,15 +28,14 @@ pub const TaskInMemRepository = struct {
         return self.todos.items;
     }
 
-    // TODO: fix error here
-    pub fn delete(_: *anyopaque, _: u32) anyerror!void {
-        // const self: *TaskInMemRepository = @ptrCast(@alignCast(ptr));
-        // for (self.todos.items) |it| {
-        //     if (it.id == id) {
-        //         try self.todos.pop();
-        //         return;
-        //     }
-        // }
+    pub fn delete(ptr: *anyopaque, id: u32) anyerror!Task {
+        const self: *TaskInMemRepository = @ptrCast(@alignCast(ptr));
+        for (self.todos.items, 0..) |it, index| {
+            if (it.id == id) {
+                const task = self.todos.orderedRemove(index);
+                return task;
+            }
+        }
         return error.TaskNotFound;
     }
 
@@ -50,11 +49,10 @@ pub const TaskInMemRepository = struct {
         };
     }
 
-    // TODO: fix error here
     pub fn deinit(self: *TaskInMemRepository) void {
-        // for (self.todos.items) |item| {
-        //     item.deinit(&self.allocator);
-        // }
+        for (self.todos.items) |item| {
+            item.deinit(self.allocator);
+        }
         self.todos.deinit();
     }
 };

@@ -11,13 +11,11 @@ pub const TaskService = struct {
 
     pub fn createTask(ptr: *anyopaque, title: []const u8) anyerror!void {
         var self: *TaskService = @ptrCast(@alignCast(ptr));
-        // TODO: fix error here
         const new_task = try Task.new(
             self.allocator,
             self.next_id,
             title,
             false,
-            "2023-10-01T00:00:00Z", // Placeholder for created_at
         );
 
         self.next_id += 1;
@@ -40,9 +38,10 @@ pub const TaskService = struct {
         return self.repo.findAll();
     }
 
-    pub fn deleteTask(ptr: *anyopaque, id: u32) anyerror!void {
+    pub fn deleteTask(ptr: *anyopaque, id: u32) anyerror!Task {
         var self: *TaskService = @ptrCast(@alignCast(ptr));
-        try self.repo.deleteById(id);
+        const task = try self.repo.deleteById(id);
+        return task;
     }
 
     pub fn taskServicePort(self: *TaskService) ports.TaskServicePort {
